@@ -1,0 +1,30 @@
+#!/bin/bash -l
+#$ -N train_model
+#$ -cwd
+#$ -o logs/train_$JOB_ID.out
+#$ -e logs/train_$JOB_ID.err
+#$ -l gpu=1
+#$ -l gpu_c=7.0
+#$ -l h_rt=4:00:00
+#$ -pe omp 4
+#$ -P dl4ds
+
+# Echo current job info to log
+echo "Starting job $JOB_ID on host: $(hostname)"
+echo "Current working directory: $(pwd)"
+echo "Running at: $(date)"
+
+# Load correct Python version
+module load python3/3.8.10
+
+# Activate your virtual environment
+source venv/bin/activate
+
+# Confirm CUDA is usable
+python3 -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('Device:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
+
+# Run your model training script
+python3 SimpleGCN.py
+
+# End timestamp
+echo "Finished at: $(date)"
